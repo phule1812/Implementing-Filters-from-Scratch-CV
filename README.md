@@ -81,3 +81,40 @@ See `median()` function in `lab1.py`
 - Smoother color transitions without blurring sharp edges.
 
 ![](images/median.png)
+
+### 4. Gaussian filter
+Gaussian filtering applies a convolution with a Gaussian kernel, smoothing the image and reducing high-frequency noise.
+
+**Mathematical Formula**:
+
+$$\
+G(x,y) = \sum_{i,j} I(x+i, y+j) \cdot K(i,j)
+\$$
+
+The Gaussian kernel  is calculated as:
+
+$$\
+K(i,j) = \frac{1}{2\pi\sigma^2} e^{-\frac{i^2 + j^2}{2\sigma^2}}
+\$$
+
+where:
+- $\ G(x,y)\$: the output pixel value after Gaussian filtering at position 
+- $\ I(x+i, y+j)\$: the pixel value at position  in the input image
+- $\ K(i,j)\$: the Gaussian kernel value at position 
+- $\sigma$ : the standard deviation of the Gaussian distribution, controlling the amount of blur
+
+**Effect of $\sigma$**:
+- A **small $\sigma$**results in a narrow Gaussian kernel, causing minimal blurring and preserving more details.
+- A **large $\sigma$** produces a wider kernel, leading to stronger blurring and smoother results, but at the cost of losing fine details.
+
+**Code implementation**: The kernel is a 2D bell-shaped curve that gives more weight to central pixels and less to distant ones, resulting in a soft blurring effect.
+See `gaussian()` function in `lab1.py`
+
+**Results**: After Gaussian filter:
+Based on the image processed with the Gaussian filter:
+- The filtered image appears smoother, with fine details like the cat's fur and eye edges slightly blurred.
+- The major outlines and shapes of the cat remain clear, indicating that the Gaussian filter blurs softly without completely erasing important details.
+- When comparing each color channel, small noise is reduced, but the contrast between different regions of color is reasonably preserved.
+
+![](images/guassian.png)
+
