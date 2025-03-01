@@ -1,207 +1,207 @@
-# Computer Vision Lab 1: Implementing Filters from Scratch 
-## Introduction: 
-This lab focuses on building fundamental image processing filters from scratch using only NumPy for calculations and Matplotlib for visualization. The goal is to gain a deep understanding of how filters work at a pixel level, rather than relying on high-level libraries like OpenCV.
-In this lab, it was nessessary to implement the following filters:
-1. Erosion
-2. Dilation
-3. Median
-4. Gaussian
-5. Lighting correction
-6. Gamma correction
-7. Binarization
+# Лабораторная работа 1 по компьютерному зрению: Реализация фильтров
+## Введение: 
+Эта лабораторная работа посвящена созданию фундаментальных фильтров обработки изображений с нуля, используя только NumPy для вычислений и Matplotlib для визуализации. Цель — получить глубокое понимание того, как работают фильтры на уровне пикселей, а не полагаться на высокоуровневые библиотеки, такие как OpenCV.
+В этой лабораторной работе необходимо было реализовать следующие фильтры:
+1. Эрозия
+2. Расширение
+3. Медиана
+4. Гауссово
+5. Коррекция освещения
+6. Гамма-коррекция
+7. Бинаризация
 
-## RGB Channel Filtering
-Each filter is applied independently to the Red (R), Green (G), and Blue (B) channels of the image. The workflow is as follows:
-1. Split the RGB image into its three channels: R, G, B.
-2. Apply the filter to each channel separately.
-3. Merge the processed channels back together to form the final filtered RGB image.
+## Фильтрация каналов RGB
+Каждый фильтр применяется независимо к красному (R), зеленому (G) и синему (B) каналам изображения. Рабочий процесс выглядит следующим образом:
+1. Разделите изображение RGB на три канала: R, G, B.
+2. Примените фильтр к каждому каналу отдельно.
+3. Объедините обработанные каналы вместе, чтобы сформировать окончательное отфильтрованное изображение RGB.
 
-This method ensures that the effect of the filters is reflected in the composite image while preserving the color relationships between channels.
+Этот метод гарантирует, что эффект фильтров будет отражен в составном изображении, сохраняя цветовые отношения между каналами.
 
-## Implemented filters:
-### 1. Erosion Filter
-Erosion reduces the boundaries of the foreground object by applying a minimum filter. It is useful for removing small white noise and separating two connected objects. 
+## Реализованные фильтры:
+### 1. Фильтр эрозии
+Эрозия уменьшает границы объекта переднего плана, применяя минимальный фильтр. Он полезен для удаления небольшого белого шума и разделения двух связанных объектов.
 
-**Mathematical Formula**:
+**Математическая формула**:
 
 $$\
 E(x,y) = \min_{(i,j) \in K} I(x+i, y+j)
 \$$
 
-Where:
-- $\ E(x,y)\$: the eroded pixel value at position \$(x,y)\$
-- $\ I(x+i, y+j) \$: pixel values in the neighborhood defined by the kernel $\ K \$
-- $\ K \$: the structuring element (kernel) used to probe the image
+Где:
+- $\ E(x,y)\$: значение размытого пикселя в позиции \$(x,y)\$
+- $\ I(x+i, y+j) \$: значения пикселей в окрестности, определяемой ядром $\ K \$
+- $\ K \$: структурирующий элемент (ядро), используемый для зондирования изображения
 
-**Code implementation**: The kernel slides over the image, and at each position, the minimum pixel value within the kernel's area is taken as the output. This shrinks bright regions and enlarges dark regions. 
-See `erode()` function in `lab1.py`.
+**Реализация кода**: ядро ​​скользит по изображению, и в каждой позиции минимальное значение пикселя в области ядра берется в качестве выходных данных. Это уменьшает яркие области и увеличивает темные области.
+См. функцию `erode()` в `lab1.py`.
 
-**Results**: After Erosion, bright areaes are shunk, especially noticeable in the R channel (due to the orange color of the cat's fur). Fine details and white noise are also removed or reduced. Dark areas become more prominent due to the shrinkage of the highlights.
-
+**Результаты**: После эрозии яркие области сужаются, особенно заметно в канале R (из-за оранжевого цвета шерсти кошки). Мелкие детали и белый шум также удаляются или уменьшаются. Темные области становятся более заметными из-за сужения светлых участков.
 ![](images/erode.png)
 
-### 2. Dilation Filter
-Dilation adds pixels to the boundaries of objects by applying a maximum filter. It helps to connect broken parts of an object.
+### 2. Фильтр расширения
+Расширение добавляет пиксели к границам объектов, применяя максимальный фильтр. Это помогает соединить сломанные части объекта.
 
-**Mathematical Formula**:
+**Математическая формула**:
 
 $$\
 D(x,y) = \max_{(i,j) \in K} I(x+i, y+j)
 \$$
 
-Where:
-- $\ D(x,y)\$: the dilated pixel value at position \$(x,y)\$
-- $\ I(x+i, y+j) \$: pixel values in the neighborhood defined by the kernel $\ K \$
-- $\ K \$: the structuring element (kernel) used to probe the image
+Где:
+- $\ D(x,y)\$: значение расширенного пикселя в позиции \$(x,y)\$
+- $\ I(x+i, y+j) \$: значения пикселей в окрестности, определяемой ядром $\ K \$
+- $\ K \$: структурирующий элемент (ядро), используемый для зондирования изображения
 
-**Code implementation**: The kernel moves across the image, and at each position, the maximum pixel value within the kernel is taken as the output. This enlarges bright regions and shrinks dark ones.
-See `dilate()` function in `lab1.py`
+**Реализация кода**: Ядро перемещается по изображению, и в каждой позиции максимальное значение пикселя в ядре берется в качестве выходного значения. Это увеличивает яркие области и сжимает темные.
+См. функцию `dilate()` в `lab1.py`
 
-**Results**: Dilation has the opposite effect of erosion; it expands bright regions and shrinks dark areas:
-- Edges and small bright details have become more pronounced compared to the original image.
-- Thin lines and bright regions appear thicker, making features like whiskers or fur more prominent.
-- Dark areas have been reduced, and bright areas have expanded, improving visibility in certain regions.
-
+**Результаты**: Расширение имеет противоположный эффект эрозии; оно расширяет яркие области и сжимает темные области:
+- Края и мелкие яркие детали стали более выраженными по сравнению с исходным изображением.
+- Тонкие линии и яркие области выглядят толще, делая такие детали, как усы или мех, более заметными.
+- Темные области были уменьшены, а яркие области расширены, что улучшило видимость в определенных областях.
 ![](images/dilate.png)
 
-### 3. Median Filter
-The median filter replaces each pixel with the median value of its neighbors. This is particularly effective in removing salt-and-pepper noise.
+### 3. Медианный фильтр
+Медианный фильтр заменяет каждый пиксель медианным значением его соседей. Это особенно эффективно для удаления шума типа «соль и перец».
 
-**Mathematical Formula**:
+**Математическая формула**:
 
 $$\
 M(x,y) = \text{median}\{I(x+i, y+j) | (i,j) \in K\}
 \$$
 
-**Code implementation**: For each pixel, the values in its neighborhood are sorted, and the median value is assigned to the central pixel.
-See `median()` function in `lab1.py`
+**Реализация кода**: для каждого пикселя значения в его окрестности сортируются, а медианное значение присваивается центральному пикселю.
 
-**Results**: The median filter effectively removes salt-and-pepper noise by replacing extreme pixel values with more representative values from their neighborhood. The filtered result shows:
-- Reduced noise in all RGB channels.
-- Smoother color transitions without blurring sharp edges.
+См. функцию `median()` в `lab1.py`
+
+**Результаты**: Медианный фильтр эффективно удаляет шум типа «соль и перец», заменяя крайние значения пикселей более репрезентативными значениями из их окрестности. Отфильтрованный результат показывает:
+- Снижение шума во всех каналах RGB.
+- Более плавные переходы цветов без размытия резких краев.
 
 ![](images/median.png)
 
-### 4. Gaussian filter
-Gaussian filtering applies a convolution with a Gaussian kernel, smoothing the image and reducing high-frequency noise.
+### 4. Фильтр Гаусса
+Фильтрация Гаусса применяет свертку с ядром Гаусса, сглаживая изображение и уменьшая высокочастотный шум.
 
-**Mathematical Formula**:
+**Математическая формула**:
 
 $$\
 G(x,y) = \sum_{i,j} I(x+i, y+j) \cdot K(i,j)
 \$$
 
-The Gaussian kernel  is calculated as:
+Гауссово ядро ​​вычисляется как:
 
 $$\
 K(i,j) = \frac{1}{2\pi\sigma^2} e^{-\frac{i^2 + j^2}{2\sigma^2}}
 \$$
 
-where:
-- $\ G(x,y)\$: the output pixel value after Gaussian filtering at position 
-- $\ I(x+i, y+j)\$: the pixel value at position  in the input image
-- $\ K(i,j)\$: the Gaussian kernel value at position 
-- $\sigma$ : the standard deviation of the Gaussian distribution, controlling the amount of blur
+где:
+- $\ G(x,y)\$: выходное значение пикселя после гауссовой фильтрации в позиции
+- $\ I(x+i, y+j)\$: значение пикселя в позиции на входном изображении
+- $\ K(i,j)\$: значение гауссова ядра в позиции
+- $\sigma$: стандартное отклонение гауссова распределения, контролирующее степень размытия
 
-**Effect of $\sigma$**:
-- A **small $\sigma$**results in a narrow Gaussian kernel, causing minimal blurring and preserving more details.
-- A **large $\sigma$** produces a wider kernel, leading to stronger blurring and smoother results, but at the cost of losing fine details.
+**Влияние $\sigma$**:
+- **Маленькое $\sigma$** приводит к узкому гауссову ядру, вызывая минимальное размытие и сохраняя больше деталей.
+- **Большое $\sigma$** приводит к более широкому ядру, что приводит к более сильному размытию и более плавным результатам, но ценой потери мелких деталей.
 
-**Code implementation**: The kernel is a 2D bell-shaped curve that gives more weight to central pixels and less to distant ones, resulting in a soft blurring effect.
-See `gaussian()` function in `lab1.py`
+**Реализация кода**: Ядро представляет собой двумерную колоколообразную кривую, которая придает больший вес центральным пикселям и меньший — удаленным, что приводит к эффекту мягкого размытия.
 
-**Results**: After Gaussian filter:
-Based on the image processed with the Gaussian filter:
-- The filtered image appears smoother, with fine details like the cat's fur and eye edges slightly blurred.
-- The major outlines and shapes of the cat remain clear, indicating that the Gaussian filter blurs softly without completely erasing important details.
-- When comparing each color channel, small noise is reduced, but the contrast between different regions of color is reasonably preserved.
+См. функцию `gaussian()` в `lab1.py`
 
+**Результаты**: После гауссова фильтра:
+На основе изображения, обработанного гауссовым фильтром:
+- Отфильтрованное изображение выглядит более гладким, с мелкими деталями, такими как шерсть кошки и края глаз, слегка размытыми.
+- Основные контуры и формы кошки остаются четкими, что указывает на то, что гауссов фильтр размывает мягко, не полностью стирая важные детали.
+- При сравнении каждого цветового канала небольшой шум уменьшается, но контраст между различными областями цвета сохраняется в разумных пределах.
+  
 ![](images/guassian.png)
 
-### 5. Lighting correction
-Adjusts the image brightness linearly by multiplying pixel values by a brightness factor.
+### 5. Коррекция освещения
+Линейно регулирует яркость изображения, умножая значения пикселей на коэффициент яркости.
 
-**Mathematical Formula**:
+**Математическая формула**:
 
 $$\
 L(x,y) = clip(I(x,y) \times b, 0, 255)
 \$$
 
-** Choosing the Brightness Factor**:
-- A brightness factor greater than 1 brightens the image.
-- A brightness factor less than 1 darkens the image.
-- A factor of 1 keeps the image unchanged.
+**Выбор коэффициента яркости**:
+- Коэффициент яркости больше 1 осветляет изображение.
+- Коэффициент яркости меньше 1 затемняет изображение.
+- Коэффициент 1 сохраняет изображение неизменным.
 
-**Code implementation**: Each pixel value is scaled by a constant factor, and values are clamped to the range [0, 255]. This is effective for uniformly brightening or darkening an image.
-See `ligjting_correction()` function in `lab1.py`
+**Реализация кода**: Каждое значение пикселя масштабируется с постоянным коэффициентом, а значения ограничиваются диапазоном [0, 255]. Это эффективно для равномерного осветления или затемнения изображения.
+См. функцию `ligjting_correction()` в `lab1.py`
 
-**Results**: The lighting correction filter has clearly brightened the image by scaling pixel intensities
-- The filtered image is noticeably lighter compared to the original, with brighter highlights and more vibrant colors.
-- All RGB channels show an increase in intensity, making the cat's fur and whiskers stand out more distinctly.
-- The boosted brightness has also enhanced the contrast, especially in the R (Red) channel, causing some regions to appear overexposed — evident from the white patches in the filtered R, G, and B channels.
+**Результаты**: Фильтр коррекции освещения явно осветлил изображение, масштабируя интенсивность пикселей
+- Отфильтрованное изображение заметно светлее по сравнению с оригиналом, с более яркими бликами и более живыми цветами.
+- Все каналы RGB показывают увеличение интенсивности, из-за чего шерсть и усы кошки выделяются более отчетливо.
+- Повышенная яркость также усилила контрастность, особенно в канале R (красный), из-за чего некоторые области выглядят переэкспонированными — очевидно по белым пятнам в отфильтрованных каналах R, G и B.
 
 ![](images/lighting-correction.png)
 
-### 6. Gamma correction
-Gamma correction adjusts pixel intensity non-linearly, making dark pixels lighter or light pixels darker based on a gamma factor $\gamma$.
+### 6. Гамма-коррекция
+Гамма-коррекция регулирует интенсивность пикселей нелинейно, делая темные пиксели светлее или светлые пиксели темнее на основе гамма-фактора $\gamma$.
 
-**Mathematical Formula**:
+**Математическая формула**:
 
 $$\
 G(x,y) = 255 \times \left( \frac{I(x,y)}{255} \right)^{\gamma}
 \$$
 
-**Choosing the Gamma Value**:
-- $\gamma > 1\$: Darkens the image, emphasizing details in bright regions.
-- $\gamma < 1\$ : Lightens the image, revealing details in darker areas.
-- $\gamma = 1\$ : No change to the image.
+**Выбор значения гаммы**:
+- $\gamma > 1\$: затемняет изображение, подчеркивая детали в ярких областях.
+- $\gamma < 1\$: осветляет изображение, выявляя детали в темных областях.
+- $\gamma = 1\$: изображение не изменяется.
 
-**Code implementation**: 
-See `gamma_correction()` function in `lab1.py`
+**Реализация кода**:
+См. функцию `gamma_correction()` в `lab1.py`
 
-**Results**: With $\gamma = 0.5\$: 
-- The image appears brighter, it increases the intensity of mid-tones and shadows, lightening darker regions.
-- Highlights become even more pronounced, and contrast may be reduced
-- Gamma correction retains more nuance in lighter areas, whereas lighting correction may lead to overexposure
-
+**Результаты**: При $\gamma = 0.5\$:
+- Изображение выглядит ярче, увеличивается интенсивность полутонов и теней, темные области становятся светлее.
+- Светлые участки становятся еще более выраженными, а контрастность может быть снижена
+- Гамма-коррекция сохраняет больше нюансов в светлых областях, тогда как коррекция освещения может привести к переэкспонированию
+  
 ![](images/gamma_correction.png)
 
-Based on the histogram of the color channels after applying gamma correction, can see that:
+На основе гистограммы цветовых каналов после применения гамма-коррекции можно увидеть, что:
 
-- Previously dark pixels have been "pushed" to the right side of the histogram, making the overall image appear brighter.
-- The histograms show a higher frequency of pixel values near 255, clearly indicating that details in dark regions have been enhanced.
-- The spacing between histogram bars in the darker regions becomes more pronounced, showing an increase in detail visibility in low-intensity areas.
+- Ранее темные пиксели были «вытеснены» в правую часть гистограммы, что сделало общее изображение более ярким.
+- Гистограммы показывают более высокую частоту значений пикселей около 255, что ясно указывает на улучшение детализации в темных областях.
+- Интервал между полосами гистограммы в темных областях становится более выраженным, что показывает увеличение детализации в областях с низкой интенсивностью.
   
 ![](images/gamma-histogram.png)
 
-### 7. Binarization
-Binarization converts a grayscale image into a binary image, where each pixel is either black or white.
+### 7. Бинаризация
+Бинаризация преобразует изображение в оттенках серого в бинарное изображение, где каждый пиксель либо черный, либо белый.
 
-**Mathematical Formula**:
+**Математическая формула**:
 
 $$\
-B(x,y) = \begin{cases} 
-    255 & \text{if } I(x,y) > T \\ 
-    0 & \text{if } I(x,y) \leq T 
+B(x,y) = \begin{cases}
+255 & \text{if } I(x,y) > T \\
+0 & \text{if } I(x,y) \leq T
 \end{cases}
 \$$
 
-**Code implementation**: 
-See `binarization()` function in `lab1.py`
+**Реализация кода**:
+См. функцию `binarization()` в `lab1.py`
 
-**Results**: After applying Binarization to the image:
-- In the R, G, B channels after binarization, prominent details — especially edges and high-contrast areas — become more visible.
-- All color information and intermediate grayscale levels are removed, making the image very simplified, retaining only the basic structure.
+**Результаты**: После применения бинаризации к изображению:
+- В каналах R, G, B после бинаризации заметные детали — особенно края и высококонтрастные области — становятся более заметными.
+- Вся цветовая информация и промежуточные уровни серого удаляются, что делает изображение очень упрощенным, сохраняя только основную структуру.
   
 ![](images/binarization.png)
 
-## Conclusion
-Through the implementation of various filters — Erosion, Dilation, Median, Gaussian, Lighting correction, Gamma correction, and Binarization — we have explored key image processing techniques used in computer vision. Each filter serves a unique purpose:
-- **Erosion**: Shrinks white regions, removing noise and small white areas.
-- **Dilation**: Expands white regions, filling gaps and connecting components.
-- **Median Filter**: Reduces salt-and-pepper noise by replacing each pixel with the median value of its neighborhood.
-- **Gaussian Filter**: Smooths images, reducing high-frequency noise using a Gaussian kernel.
-- **Lighting Correction**: Adjusts for non-uniform lighting, enhancing image clarity.
-- **Gamma Correction**: Modifies image brightness non-linearly, useful for detail enhancement in shadows or highlights.
-- **Binarization**: Converts grayscale images to binary, highlighting edges and high-contrast areas.
-Understanding and implementing these filters from scratch builds a strong foundation for tackling more complex image processing and computer vision tasks.
+## Заключение
+Благодаря внедрению различных фильтров — эрозии, расширения, медианы, гауссовского, коррекции освещения, гамма-коррекции и бинаризации — мы изучили ключевые методы обработки изображений, используемые в компьютерном зрении. Каждый фильтр служит уникальной цели:
+- **Эрозия**: сжимает белые области, удаляя шум и небольшие белые области.
+- **Расширение**: расширяет белые области, заполняя пробелы и соединяя компоненты.
+- **Медианный фильтр**: уменьшает шум «соль-перец», заменяя каждый пиксель медианным значением его соседства.
+- **Гауссовский фильтр**: сглаживает изображения, уменьшая высокочастотный шум с помощью гауссова ядра.
+- **Коррекция освещения**: настраивает неравномерное освещение, повышая четкость изображения.
+- **Гамма-коррекция**: нелинейно изменяет яркость изображения, полезно для улучшения деталей в тенях или светлых участках.
+- **Бинаризация**: преобразует изображения в оттенках серого в двоичные, выделяя края и высококонтрастные области.
+Понимание и реализация этих фильтров с нуля создает прочную основу для решения более сложных задач обработки изображений и компьютерного зрения.
