@@ -194,3 +194,14 @@ See `binarization()` function in `lab1.py`
 - All color information and intermediate grayscale levels are removed, making the image very simplified, retaining only the basic structure.
   
 ![](images/binarization.png)
+
+## Conclusion
+Through the implementation of various filters — Erosion, Dilation, Median, Gaussian, Lighting correction, Gamma correction, and Binarization — we have explored key image processing techniques used in computer vision. Each filter serves a unique purpose:
+- **Erosion**: Shrinks white regions, removing noise and small white areas.
+- **Dilation**: Expands white regions, filling gaps and connecting components.
+- **Median Filter**: Reduces salt-and-pepper noise by replacing each pixel with the median value of its neighborhood.
+- **Gaussian Filter**: Smooths images, reducing high-frequency noise using a Gaussian kernel.
+- **Lighting Correction**: Adjusts for non-uniform lighting, enhancing image clarity.
+- **Gamma Correction**: Modifies image brightness non-linearly, useful for detail enhancement in shadows or highlights.
+- **Binarization**: Converts grayscale images to binary, highlighting edges and high-contrast areas.
+Understanding and implementing these filters from scratch builds a strong foundation for tackling more complex image processing and computer vision tasks.
