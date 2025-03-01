@@ -6,7 +6,7 @@ In this lab, it was nessessary to implement the following filters:
 2. Dilation
 3. Median
 4. Gaussian
-5. Light correction
+5. Lighting correction
 6. Gamma correction
 7. Binarization
 
@@ -118,3 +118,79 @@ Based on the image processed with the Gaussian filter:
 
 ![](images/guassian.png)
 
+### 5. Lighting correction
+Adjusts the image brightness linearly by multiplying pixel values by a brightness factor.
+
+**Mathematical Formula**:
+
+$$\
+L(x,y) = clip(I(x,y) \times b, 0, 255)
+\$$
+
+** Choosing the Brightness Factor**:
+- A brightness factor greater than 1 brightens the image.
+- A brightness factor less than 1 darkens the image.
+- A factor of 1 keeps the image unchanged.
+
+**Code implementation**: Each pixel value is scaled by a constant factor, and values are clamped to the range [0, 255]. This is effective for uniformly brightening or darkening an image.
+See `ligjting_correction()` function in `lab1.py`
+
+**Results**: The lighting correction filter has clearly brightened the image by scaling pixel intensities
+- The filtered image is noticeably lighter compared to the original, with brighter highlights and more vibrant colors.
+- All RGB channels show an increase in intensity, making the cat's fur and whiskers stand out more distinctly.
+- The boosted brightness has also enhanced the contrast, especially in the R (Red) channel, causing some regions to appear overexposed — evident from the white patches in the filtered R, G, and B channels.
+
+![](images/lighting-correction.png)
+
+### 6. Gamma correction
+Gamma correction adjusts pixel intensity non-linearly, making dark pixels lighter or light pixels darker based on a gamma factor $\gamma$.
+
+**Mathematical Formula**:
+
+$$\
+G(x,y) = 255 \times \left( \frac{I(x,y)}{255} \right)^{\gamma}
+\$$
+
+**Choosing the Gamma Value**:
+- $\gamma > 1\$: Darkens the image, emphasizing details in bright regions.
+- $\gamma < 1\$ : Lightens the image, revealing details in darker areas.
+- $\gamma = 1\$ : No change to the image.
+
+**Code implementation**: 
+See `gamma_correction()` function in `lab1.py`
+
+**Results**: With $\gamma = 0.5\$: 
+- The image appears brighter, it increases the intensity of mid-tones and shadows, lightening darker regions.
+- Highlights become even more pronounced, and contrast may be reduced
+- Gamma correction retains more nuance in lighter areas, whereas lighting correction may lead to overexposure
+
+![](images/gamma_correction.png)
+
+Based on the histogram of the color channels after applying gamma correction, can see that:
+
+- Previously dark pixels have been "pushed" to the right side of the histogram, making the overall image appear brighter.
+- The histograms show a higher frequency of pixel values near 255, clearly indicating that details in dark regions have been enhanced.
+- The spacing between histogram bars in the darker regions becomes more pronounced, showing an increase in detail visibility in low-intensity areas.
+  
+![](images/gamma-histogram.png)
+
+### 7. Binarization
+Binarization converts a grayscale image into a binary image, where each pixel is either black or white.
+
+**Mathematical Formula**:
+
+$$\
+B(x,y) = \begin{cases} 
+    255 & \text{if } I(x,y) > T \\ 
+    0 & \text{if } I(x,y) \leq T 
+\end{cases}
+\$$
+
+**Code implementation**: 
+See `binarization()` function in `lab1.py`
+
+**Results**: After applying Binarization to the image:
+- In the R, G, B channels after binarization, prominent details — especially edges and high-contrast areas — become more visible.
+- All color information and intermediate grayscale levels are removed, making the image very simplified, retaining only the basic structure.
+  
+![](images/binarization.png)
